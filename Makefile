@@ -1,6 +1,6 @@
 PROTO_DIR := proto
 
-proto-gen:
+proto-build:
 	@echo "Generating Go code from proto files..."
 	protoc \
 		--go_out=. \
@@ -11,3 +11,9 @@ proto-gen:
 		$(PROTO_DIR)/*.proto
 	@echo "Done generating proto code."
 
+clean-proto:
+	rm -rf internal/gen/proto
+
+proto-gen: clean-proto proto-build
+
+clean: clean-proto
