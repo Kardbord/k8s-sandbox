@@ -7,7 +7,7 @@ import (
 
 	"github.com/Kardbord/k8s-sandbox/internal/db"
 	pb "github.com/Kardbord/k8s-sandbox/internal/gen/proto"
-	redisutil "github.com/Kardbord/k8s-sandbox/internal/redis"
+	rdsutil "github.com/Kardbord/k8s-sandbox/internal/redis"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
@@ -25,7 +25,7 @@ type Server struct {
 func NewServer() (*Server, error) {
 	ctx := context.Background()
 
-	rdb, err := redisutil.NewClient()
+	rdb, err := rdsutil.NewClient()
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 	}
@@ -56,7 +56,7 @@ func (s *Server) CreateJob(ctx context.Context, req *pb.CreateJobRequest) (*pb.C
 		return nil, status.Errorf(codes.Internal, "failed to insert job: %v", err)
 	}
 
-	if err := redisutil.PushJob(ctx, s.redisClient, job.JobId); err != nil {
+	if err := rdsutil.PushJob(ctx, s.redisClient, job.JobId); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to push job to Redis: %v", err)
 	}
 
