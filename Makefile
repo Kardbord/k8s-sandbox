@@ -2,7 +2,19 @@ PROTO_DIR := proto
 GO_MODULE := k8s-sandbox
 BUILD_DIR := build
 
-all: api-build worker-build client-build
+all: tidy fmt vet test api-build worker-build client-build
+
+tidy: proto-gen
+	go mod tidy
+
+fmt: proto-gen
+	go fmt ./...
+
+test: proto-gen
+	go test ./...
+
+vet: proto-gen
+	go vet ./...
 
 proto-build:
 	@echo "Generating Go code from proto files..."
