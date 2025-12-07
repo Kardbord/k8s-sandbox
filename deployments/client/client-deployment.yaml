@@ -18,8 +18,6 @@ spec:
           image: k8s-sandbox-client:local
           imagePullPolicy: Never
           env:
-            - name: API_HOST
-              value: "api" # Kubernetes service DNS
-            - name: API_PORT
-              value: "50051"
+            - name: GRPC_ADDR
+              value: "api:50051"
           command: ["./client"]

@@ -20,17 +20,9 @@ spec:
           ports:
             - containerPort: 50051 # gRPC port
           env:
-            - name: POSTGRES_HOST
-              value: "host.docker.internal"
-            - name: POSTGRES_PORT
-              value: "5432"
-            - name: POSTGRES_DB
-              value: "jobs"
-            - name: POSTGRES_USER
-              value: "postgres"
-            - name: POSTGRES_PASSWORD
-              value: "password"
-            - name: REDIS_HOST
-              value: "host.docker.internal"
-            - name: REDIS_PORT
-              value: "6379"
+            - name: DB_ADDR
+              value: "host.docker.internal:5432"
+            - name: REDIS_ADDR
+              value: "host.docker.internal:6379"
+            - name: GRPC_ADDR
+              value: ":50051"
