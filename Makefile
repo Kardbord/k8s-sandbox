@@ -5,7 +5,7 @@ API_IMAGE := $(GO_MODULE)-api:local
 WORKER_IMAGE := $(GO_MODULE)-worker:local
 CLIENT_IMAGE := $(GO_MODULE)-client:local
 
-all: tidy fmt vet test api-build worker-build client-build docker-images kube-deploy
+all: build test build docker-images kube-deploy
 
 tidy: proto-gen
 	go mod tidy
@@ -51,6 +51,8 @@ client-build: proto-gen
 	@echo "Building client..."
 	go build -o $(BUILD_DIR)/ ./cmd/client
 	@echo "Client built."
+
+build: tidy fmt vet api-build worker-build client-build
 
 clean-build:
 	@echo "Cleaning build directory..."
