@@ -4,7 +4,8 @@ kind: Deployment
 metadata:
   name: worker
 spec:
-  replicas: 2 # scale horizontally to test Kubernetes self-healing
+  # Start with 1 replica; HPA will scale from here
+  replicas: 1
   selector:
     matchLabels:
       app: worker
@@ -17,6 +18,16 @@ spec:
         - name: worker
           image: k8s-sandbox-worker:local
           imagePullPolicy: Never
+
+          # Required so HPA knows how to scale
+          resources:
+            requests:
+              cpu: 250m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+
           env:
             - name: DB_ADDR
               value: "host.docker.internal:5432"
