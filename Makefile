@@ -3,7 +3,6 @@ GO_MODULE := k8s-sandbox
 BUILD_DIR := build
 API_IMAGE := $(GO_MODULE)-api:local
 WORKER_IMAGE := $(GO_MODULE)-worker:local
-CLIENT_IMAGE := $(GO_MODULE)-client:local
 
 all: build test build docker-images kube-deploy
 
@@ -59,7 +58,7 @@ clean-build:
 	rm -rf $(BUILD_DIR)
 	@echo "Build directory cleaned."
 
-docker-images: docker-api-image docker-worker-image docker-client-image
+docker-images: docker-api-image docker-worker-image
 
 docker-api-image: clean-api-image proto-gen
 	@echo "Building $(API_IMAGE)..."
@@ -71,11 +70,6 @@ docker-worker-image: clean-worker-image proto-gen
 	docker build -t $(WORKER_IMAGE) -f Dockerfile.worker .
 	@echo "Finsihed $(WORKER_IMAGE) build."
 
-docker-client-image: clean-client-image proto-gen
-	@echo "Building $(CLIENT_IMAGE)..."
-	docker build -t $(CLIENT_IMAGE) -f Dockerfile.client .
-	@echo "Finished $(CLIENT_IMAGE) build."
-
 clean-api-image:
 	@echo "Cleaning API Docker image..."
 	docker rmi $(API_IMAGE) || true
@@ -86,12 +80,7 @@ clean-worker-image:
 	docker rmi $(WORKER_IMAGE) || true
 	@echo "Cleaned worker Docker image..."
 
-clean-client-image:
-	@echo "Cleaning client Docker image..."
-	docker rmi $(CLIENT_IMAGE) || true
-	@echo "Cleaned client Docker image..."
-
-clean-docker-images: clean-api-image clean-worker-image clean-client-image
+clean-docker-images: clean-api-image clean-worker-image
 
 start-db:
 	docker compose -f ./deployments/db/docker-compose.yml up -d
@@ -113,10 +102,7 @@ kube-deploy-api: docker-api-image
 kube-deploy-worker: docker-worker-image
 	kubectl apply -f $(K8S_DIR)/worker
 
-kube-deploy-client: docker-client-image
-	kubectl apply -f $(K8S_DIR)/client
-
-kube-deploy: start-db start-redis kube-deploy-api kube-deploy-worker kube-deploy-client
+kube-deploy: start-db start-redis kube-deploy-api kube-deploy-worker
 
 kube-clean-api:
 	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/api
@@ -124,10 +110,7 @@ kube-clean-api:
 kube-clean-worker:
 	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/worker
 
-kube-clean-client:
-	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/client
-
-clean-kube: kube-clean-client kube-clean-api kube-clean-worker
+clean-kube: kube-clean-api kube-clean-worker
 
 clean: clean-kube stop-redis stop-db clean-docker-images clean-build clean-proto
 

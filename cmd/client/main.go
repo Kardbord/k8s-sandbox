@@ -15,7 +15,7 @@ const clientID = "faux-client"
 func main() {
 	grpcAddr := os.Getenv("GRPC_ADDR")
 	if grpcAddr == "" {
-		grpcAddr = "localhost:50051"
+		grpcAddr = "localhost:30051"
 	}
 
 	c, err := client.New(grpcAddr)

@@ -18,11 +18,11 @@ spec:
           image: k8s-sandbox-api:local
           imagePullPolicy: Never
           ports:
-            - containerPort: 50051 # gRPC port
+            - containerPort: 30051 # gRPC port
           env:
             - name: DB_ADDR
               value: "host.docker.internal:5432"
             - name: REDIS_ADDR
               value: "host.docker.internal:6379"
             - name: GRPC_ADDR
-              value: ":50051"
+              value: ":30051"

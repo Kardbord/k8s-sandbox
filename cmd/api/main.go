@@ -18,7 +18,7 @@ func main() {
 
 	grpcAddr := os.Getenv("GRPC_ADDR")
 	if grpcAddr == "" {
-		grpcAddr = ":50051"
+		grpcAddr = ":30051"
 	}
 
 	lis, err := net.Listen("tcp", grpcAddr)

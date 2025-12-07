@@ -7,6 +7,7 @@ spec:
   selector:
     app: api
   ports:
-    - port: 50051
-      targetPort: 50051
-  type: ClusterIP
+    - port: 30051
+      targetPort: 30051
+      nodePort: 30051
+  type: NodePort
