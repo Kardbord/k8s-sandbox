@@ -114,3 +114,26 @@ clean-kube: kube-clean-api kube-clean-worker
 
 clean: clean-kube stop-redis stop-db clean-docker-images clean-build clean-proto
 
+# Misc. utility targets
+
+view-db:
+	docker exec postgres psql -U postgres -d jobs -c "SELECT * FROM jobs"
+
+view-db-finished:
+	docker exec postgres psql -U postgres -d jobs -c "SELECT * FROM jobs WHERE status = 'JOB_STATUS_DONE'"
+
+view-db-unfinished:
+	docker exec postgres psql -U postgres -d jobs -c "SELECT * FROM jobs WHERE status != 'JOB_STATUS_DONE'"
+
+view-api-logs:
+	kubectl logs deployments/api
+
+view-worker-logs:
+	kubectl logs deployments/worker
+
+watch-api-logs:
+	kubectl logs -f 'deployments/api'
+
+watch-worker-logs:
+	kubectl logs -f deployments/worker
+
