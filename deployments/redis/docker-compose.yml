@@ -7,9 +7,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+      # Note the absence of a persistent data volume.
+      # Data will not persist across deployments.
     restart: unless-stopped
-
-volumes:
-  redis-data:

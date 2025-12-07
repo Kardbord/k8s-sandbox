@@ -9,10 +9,8 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
     restart: unless-stopped
-
-volumes:
-  postgres-data:
+    volumes:
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
+      # Note the absence of a persistent data volume.
+      # Data/Tables will not persist across deployments.
