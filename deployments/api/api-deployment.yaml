@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: k8s-sandbox-api:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 50051 # gRPC port
+          env:
+            - name: POSTGRES_HOST
+              value: "host.docker.internal"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: "jobs"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "password"
+            - name: REDIS_HOST
+              value: "host.docker.internal"
+            - name: REDIS_PORT
+              value: "6379"

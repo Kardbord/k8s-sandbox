@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	addr     = "localhost:50051"
+	addr     = "host.docker.internal:50051"
 	clientID = "faux-client"
 )
 

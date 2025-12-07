@@ -10,7 +10,7 @@ import (
 const jobQueueKey = "job_queue"
 
 func NewClient() (*redis.Client, error) {
-	addr := "localhost:6379"
+	addr := "host.docker.internal:6379"
 	rdb := redis.NewClient(&redis.Options{Addr: addr})
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		return nil, err

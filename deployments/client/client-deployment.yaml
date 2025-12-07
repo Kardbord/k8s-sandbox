@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: k8s-sandbox-client:local
+          imagePullPolicy: Never
+          env:
+            - name: API_HOST
+              value: "api" # Kubernetes service DNS
+            - name: API_PORT
+              value: "50051"
+          command: ["./client"]

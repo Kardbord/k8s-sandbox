@@ -5,7 +5,7 @@ API_IMAGE := $(GO_MODULE)-api:local
 WORKER_IMAGE := $(GO_MODULE)-worker:local
 CLIENT_IMAGE := $(GO_MODULE)-client:local
 
-all: tidy fmt vet test api-build worker-build client-build docker
+all: tidy fmt vet test api-build worker-build client-build docker-images kube-deploy
 
 tidy: proto-gen
 	go mod tidy
@@ -57,19 +57,19 @@ clean-build:
 	rm -rf $(BUILD_DIR)
 	@echo "Build directory cleaned."
 
-docker: docker-api docker-worker docker-client
+docker-images: docker-api-image docker-worker-image docker-client-image
 
-docker-api: clean-api-image proto-gen
+docker-api-image: clean-api-image proto-gen
 	@echo "Building $(API_IMAGE)..."
 	docker build -t $(API_IMAGE) -f Dockerfile.api .
 	@echo "Finsihed $(API_IMAGE) build."
 
-docker-worker: clean-worker-image proto-gen
+docker-worker-image: clean-worker-image proto-gen
 	@echo "Building $(WORKER_IMAGE)..."
 	docker build -t $(WORKER_IMAGE) -f Dockerfile.worker .
 	@echo "Finsihed $(WORKER_IMAGE) build."
 
-docker-client: clean-client-image proto-gen
+docker-client-image: clean-client-image proto-gen
 	@echo "Building $(CLIENT_IMAGE)..."
 	docker build -t $(CLIENT_IMAGE) -f Dockerfile.client .
 	@echo "Finished $(CLIENT_IMAGE) build."
@@ -89,7 +89,43 @@ clean-client-image:
 	docker rmi $(CLIENT_IMAGE) || true
 	@echo "Cleaned client Docker image..."
 
-clean-docker: clean-api-image clean-worker-image clean-client-image
+clean-docker-images: clean-api-image clean-worker-image clean-client-image
 
-clean: clean-docker clean-build clean-proto
+start-db:
+	docker compose -f ./deployments/db/docker-compose.yml up -d
+
+stop-db:
+	docker compose -f ./deployments/db/docker-compose.yml down
+
+start-redis:
+	docker compose -f ./deployments/redis/docker-compose.yml up -d
+
+stop-redis:
+	docker compose -f ./deployments/redis/docker-compose.yml down
+
+K8S_DIR := deployments
+
+kube-deploy-api: docker-api-image
+	kubectl apply -f $(K8S_DIR)/api
+
+kube-deploy-worker: docker-worker-image
+	kubectl apply -f $(K8S_DIR)/worker
+
+kube-deploy-client: docker-client-image
+	kubectl apply -f $(K8S_DIR)/client
+
+kube-deploy: start-db start-redis kube-deploy-api kube-deploy-worker kube-deploy-client
+
+kube-clean-api:
+	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/api
+
+kube-clean-worker:
+	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/worker
+
+kube-clean-client:
+	kubectl delete --ignore-not-found=true -f $(K8S_DIR)/client
+
+clean-kube: kube-clean-client kube-clean-api kube-clean-worker
+
+clean: clean-kube stop-redis stop-db clean-docker-images clean-build clean-proto
 
