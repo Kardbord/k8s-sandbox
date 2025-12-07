@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"log"
+	"math"
 	"time"
 
 	"github.com/Kardbord/k8s-sandbox/internal/db"
@@ -69,9 +70,11 @@ func (w *Worker) handleJob(ctx context.Context, jobID string) error {
 	iterations := job.Iterations
 	log.Printf("processing job %s (%d iterations)", jobID, iterations)
 
+	var result float64
 	for i := range iterations {
-		_ = i * i
+		result = math.Sqrt(float64(i))
 	}
+	_ = result
 
 	if err := db.UpdateJobStatus(
 		ctx, w.db, jobID, pb.JobStatus_JOB_STATUS_DONE, timestamppb.Now(),
