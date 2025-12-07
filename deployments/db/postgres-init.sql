@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     job_id TEXT PRIMARY KEY,
     client_id TEXT NOT NULL,
     iterations INTEGER NOT NULL,
-    status INTEGER NOT NULL,
+    status TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL
 );

@@ -28,7 +28,7 @@ func InsertJob(ctx context.Context, pool *pgxpool.Pool, job *pb.Job) error {
 		job.JobId,
 		job.ClientId,
 		job.Iterations,
-		int32(job.Status),
+		job.Status.String(),
 		job.CreatedAt.AsTime(),
 		job.UpdatedAt.AsTime(),
 	)
@@ -46,12 +46,12 @@ func GetJob(ctx context.Context, pool *pgxpool.Pool, jobID string) (*pb.Job, err
 		clientID   string
 		jID        string
 		iterations uint32
-		statusInt  int32
+		statusStr  string
 		createdAt  time.Time
 		updatedAt  time.Time
 	)
 
-	if err := row.Scan(&clientID, &jID, &iterations, &statusInt, &createdAt, &updatedAt); err != nil {
+	if err := row.Scan(&clientID, &jID, &iterations, &statusStr, &createdAt, &updatedAt); err != nil {
 		return nil, err
 	}
 
@@ -59,7 +59,7 @@ func GetJob(ctx context.Context, pool *pgxpool.Pool, jobID string) (*pb.Job, err
 		ClientId:   clientID,
 		JobId:      jID,
 		Iterations: iterations,
-		Status:     pb.JobStatus(statusInt),
+		Status:     pb.JobStatus(pb.JobStatus_value[statusStr]),
 		CreatedAt:  timestamppb.New(createdAt),
 		UpdatedAt:  timestamppb.New(updatedAt),
 	}, nil
@@ -70,7 +70,7 @@ func UpdateJobStatus(ctx context.Context, pool *pgxpool.Pool, jobID string, stat
 		`UPDATE jobs
 		 SET status = $1, updated_at = $2
 		 WHERE job_id = $3`,
-		int32(status),
+		status.String(),
 		updated.AsTime(),
 		jobID,
 	)
