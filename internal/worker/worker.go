@@ -18,10 +18,6 @@ const (
 	blpopTimeout = 5 * time.Second
 )
 
-type queueMessage struct {
-	JobID string
-}
-
 type Worker struct {
 	db  *pgxpool.Pool
 	rdb *redis.Client

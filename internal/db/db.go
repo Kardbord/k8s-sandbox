@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	pb "github.com/Kardbord/k8s-sandbox/internal/gen/proto"
@@ -10,7 +12,12 @@ import (
 )
 
 func NewPostgresPool(ctx context.Context) (*pgxpool.Pool, error) {
-	dbURL := "postgres://postgres:password@localhost:5432/jobs?sslmode=disable"
+	dbAddr := os.Getenv("DB_ADDR")
+	if dbAddr == "" {
+		dbAddr = "localhost:5432"
+	}
+
+	dbURL := fmt.Sprintf("postgres://postgres:password@%s/jobs?sslmode=disable", dbAddr)
 	return pgxpool.New(ctx, dbURL)
 }
 

@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -10,8 +11,12 @@ import (
 const jobQueueKey = "job_queue"
 
 func NewClient() (*redis.Client, error) {
-	addr := "host.docker.internal:6379"
-	rdb := redis.NewClient(&redis.Options{Addr: addr})
+	rdsAddr := os.Getenv("REDIS_ADDR")
+	if rdsAddr == "" {
+		rdsAddr = "localhost:6379"
+	}
+
+	rdb := redis.NewClient(&redis.Options{Addr: rdsAddr})
 	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		return nil, err
 	}

@@ -2,28 +2,29 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/Kardbord/k8s-sandbox/internal/client"
 )
 
-const (
-	addr     = "host.docker.internal:50051"
-	clientID = "faux-client"
-)
+const clientID = "faux-client"
 
 func main() {
-	count := rand.Intn(1000)
+	grpcAddr := os.Getenv("GRPC_ADDR")
+	if grpcAddr == "" {
+		grpcAddr = "localhost:50051"
+	}
 
-	c, err := client.New(addr)
+	c, err := client.New(grpcAddr)
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
 	}
 
-	fmt.Printf("Submitting %d jobs to %s...\n", count, addr)
+	count := rand.Intn(1000)
+	log.Printf("Submitting %d jobs to %s...\n", count, grpcAddr)
 
 	for range count {
 		iterations := uint32(rand.Intn(1000000) + 500000) // simulate work
@@ -34,9 +35,9 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("Submitted job %s with %d iterations\n", job.JobId, job.Iterations)
+		log.Printf("Submitted job %s with %d iterations\n", job.JobId, job.Iterations)
 		time.Sleep(200 * time.Millisecond)
 	}
 
-	fmt.Println("Done submitting jobs.")
+	log.Println("Done submitting jobs.")
 }
