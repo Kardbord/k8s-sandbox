@@ -22,11 +22,11 @@ spec:
           # Required so HPA knows how to scale
           resources:
             requests:
-              cpu: 250m
-              memory: 128Mi
+              cpu: 50m
+              memory: 64Mi
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 100m
+              memory: 128Mi
 
           env:
             - name: DB_ADDR

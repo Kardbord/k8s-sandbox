@@ -43,6 +43,7 @@ k8s-sandbox/
 - Docker
 - Kubernetes
   - `kubectl` CLI
+  - [Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
 - Protobuf
   - `protoc`
   - `protoc-gen-go`
@@ -89,10 +90,10 @@ the logs of your pods using several utility `make` targets.
 If your API and service worker(s) are up and ready, you can start a client
 with `./build/client`. You should see your app running as before, but this
 time it's in Kubernetes! You should be able to watch Kubernetes scale the
-app based on CPU load. Monitor your pod status with `kubectl get pods -w`,
-then fire off a few clients in the background.
+app based on CPU load.
 
-`for i in $(seq 1 100); do ./build/client &>/dev/null &`
+- `make watch-pods`
+- `for _ in $(seq 1 100); do ./build/client &>/dev/null & done`
 
 You should be able to see the number of worker pods increase or decrease
-based on load. TODO: Figure out why this is not happening yet :)
+based on load.

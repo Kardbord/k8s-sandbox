@@ -137,3 +137,9 @@ watch-api-logs:
 watch-worker-logs:
 	kubectl logs -f deployments/worker
 
+view-pods:
+	kubectl get pods
+
+watch-pods:
+	kubectl get pods -w
+
